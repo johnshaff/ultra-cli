@@ -144,6 +144,9 @@ def run_interactive_welcome():
     """
     Called when user types 'ultra' with no subcommands.
     """
+    # Set terminal title
+    print("\033]0;⚡ Ultra Chat\007", end="", flush=True)
+    
     print_ascii_art()
     console.print("Welcome to Ultra CLI. Type /quit at any time to exit.\n")
     app = UltraApp()
