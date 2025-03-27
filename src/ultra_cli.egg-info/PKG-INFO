@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: ultra-cli
+Version: 0.1.0
+Summary: A CLI tool to interact with multiple LLM providers.
+Author-email: John Shaff <john@shaff.co>
+License-Expression: MIT
+Keywords: chatbot,cli,llm
+Classifier: Programming Language :: Python :: 3.10.10
+Classifier: Operating System :: OS Independent
+Requires-Dist: rich
+Requires-Dist: requests
+Requires-Dist: openai
