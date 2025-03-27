@@ -2,6 +2,10 @@
 
 `Ultra` is a command-line tool for interacting with various LLM (Large Language Model) providers. It supports multi-turn conversations, context management, and even compacting your conversation history using a cheaper model.
 
+![Ultra CLI Demo](images/ultra-demo.png)
+
+Ultra works with any terminal, but this screenshot is from [iTerm2](https://github.com/gnachman/iTerm2) which allows for vertical splitting of the window so you can have multiple chat sessions side by side for quick research, each maintaining their own context window.
+
 ## Features
 - Multiple provider support (OpenAI by default).
 - Model selection and dynamic switching.
@@ -24,10 +28,15 @@
     pip install .
     ```
 
-3. Run with:
+3. Quickstart with:
 
     ```bash
     ultra
+    ```
+4. Custom start with a specific model:
+
+    ```bash
+    ultra models
     ```
 
 Optionally set environment variables:
