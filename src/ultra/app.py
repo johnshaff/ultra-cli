@@ -103,12 +103,10 @@ class UltraApp:
         """
         Primary chat loop after a model is selected.
         """
-        console.print(f"\nUsing model: [bold yellow]{self.current_model}[/bold yellow]\n")
+        # Use #000000 for true black instead of default bold black which might appear as gray
+        console.print(f"[bold #000000]Ultra CLI - Quick Chat with {self.current_model}[/bold #000000]\n")
         while True:
-            # Add empty line before prompt
-            print()
-            
-            # Prompt for user input
+            # Prompt for user input (without extra line space)
             user_prompt = console.input(color_text("John >>> ", "blue"))
 
             # Check if input is a command
@@ -142,13 +140,17 @@ class UltraApp:
 
 def run_interactive_welcome():
     """
-    Called when user types 'ultra' with no subcommands.
+    Called when user types 'ultra models'.
     """
-    # Set terminal title
-    print("\033]0;⚡ Ultra Chat\007", end="", flush=True)
+    # Set terminal title (no newline)
+    print("\033]0;⚡ Ultra Chat\007", end="")
     
+    # Show ASCII art for 'ultra models' command
     print_ascii_art()
+    
+    # Show welcome message
     console.print("Welcome to Ultra CLI. Type /quit at any time to exit.\n")
+    
     app = UltraApp()
     app.select_provider_and_model()
     app.new_session()

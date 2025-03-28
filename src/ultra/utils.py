@@ -12,7 +12,7 @@ def print_ascii_art():
  ╚████╔╝ ███████╗██║   ██║  ██║██║  ██║
   ╚═══╝  ╚══════╝╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
     """
-    console.print(art, style="bold magenta")
+    console.print(art, style="bold magenta", end="")
 
 def color_text(text: str, style: str) -> str:
     """

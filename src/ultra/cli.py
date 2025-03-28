@@ -13,11 +13,9 @@ def main():
     
     if len(args) == 0:
         # No subcommands => Show quick start with default model
-        # Set terminal title
-        print("\033]0;⚡ Ultra Chat\007", end="", flush=True)
-        
-        # Start chat with default model
-        console.print("[bold magenta]Ultra CLI - Quick Chat[/bold magenta]")
+        # Set terminal title (no newline)
+        print("\033]0;⚡ Ultra Chat\007", end="")
+        # Create app without initial message (will show in chat_loop with model)
         app = UltraApp()
         # We'll skip the selection and pick a default
         # e.g. "openai" with "gpt-3.5-turbo"
@@ -34,11 +32,9 @@ def main():
         from ultra.app import run_interactive_welcome
         run_interactive_welcome()
     elif subcommand == "chat":
-        # Set terminal title
-        print("\033]0;⚡ Ultra Chat\007", end="", flush=True)
-        
-        # Start chat with default model
-        console.print("[bold magenta]Ultra CLI - Quick Chat[/bold magenta]")
+        # Set terminal title (no newline)
+        print("\033]0;⚡ Ultra Chat\007", end="")
+        # Create app without initial message (will show in chat_loop with model)
         app = UltraApp()
         # We'll skip the selection and pick a default
         # e.g. "openai" with "gpt-3.5-turbo"
