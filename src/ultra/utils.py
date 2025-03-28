@@ -20,14 +20,17 @@ def color_text(text: str, style: str) -> str:
     """
     return f"[{style}]{text}[/{style}]"
 
-def print_streaming_response(provider, model_name, messages):
+def print_streaming_response(provider, model_name, messages) -> str:
     """
-    Streams the model's response token by token.
+    Streams the model's response token by token and returns the full text.
     """
+    full_response = ""
     for token in provider.stream_completion(model_name, messages):
-        # Use print with flush=True instead of console.print
-        print(token, end="", flush=True)
+        chunk = "".join(token)
+        full_response += chunk
+        print(chunk, end="", flush=True)
     print()  # move to next line
+    return full_response
 
 def print_markdown(md_text: str):
     """

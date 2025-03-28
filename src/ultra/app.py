@@ -122,20 +122,12 @@ class UltraApp:
             print()
             
             # Prepare context for model
-            messages = self.context_manager.conversation
+            messages = self.context_manager.context
             console.print(color_text("Ultra >>>", "red"), end=" ")
             # Stream the model's response
-            print_streaming_response(self.current_provider, self.current_model, messages)
-            # No empty line after response
+            full_response = print_streaming_response(self.current_provider, self.current_model, messages)
+            console.print()  # Add a newline after the streamed response
 
-            # The streamed response is not automatically added to the conversation 
-            # because we need a complete message. So, let's get a single response
-            # from the provider in a second pass to store in conversation.
-            # Alternatively, we could buffer the streamed tokens as they arrive.
-            full_response = self.current_provider.get_completion(
-                self.current_model,
-                user_prompt
-            )
             self.context_manager.add_message("assistant", full_response)
 
 def run_interactive_welcome():
