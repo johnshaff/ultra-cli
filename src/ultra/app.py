@@ -8,6 +8,7 @@ from ultra.providers import OpenAIProvider  # add more providers here
 from ultra.utils import (
     print_ascii_art,
     print_streaming_response,
+    print_streaming_markdown,
     console,
     color_text
 )
@@ -125,7 +126,7 @@ class UltraApp:
             messages = self.context_manager.context
             console.print(color_text("Ultra >>>", "red"), end=" ")
             # Stream the model's response
-            full_response = print_streaming_response(self.current_provider, self.current_model, messages)
+            full_response = print_streaming_markdown(self.current_provider, self.current_model, messages)
             console.print()  # Add a newline after the streamed response
 
             self.context_manager.add_message("assistant", full_response)

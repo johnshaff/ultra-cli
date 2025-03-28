@@ -1,5 +1,7 @@
 from rich.console import Console
 from rich.markdown import Markdown
+from rich.live import Live
+
 
 console = Console()
 
@@ -30,6 +32,20 @@ def print_streaming_response(provider, model_name, messages) -> str:
         full_response += chunk
         print(chunk, end="", flush=True)
     print()  # move to next line
+    return full_response
+
+def print_streaming_markdown(provider, model_name, messages) -> str:
+    """
+    Streams markdown content token by token and updates a live Markdown display.
+    """
+    full_response = ""
+    # Live display will continuously update the rendered markdown.
+    with Live(Markdown(""), refresh_per_second=10) as live:
+        for token in provider.stream_completion(model_name, messages):
+            chunk = "".join(token)
+            full_response += chunk
+            # Update the live markdown every iteration.
+            live.update(Markdown(full_response))
     return full_response
 
 def print_markdown(md_text: str):
