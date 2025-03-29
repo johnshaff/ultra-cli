@@ -14,7 +14,8 @@ dependencies = [
   "rich",
   "requests",
   "openai",
-  "textual"
+  "textual",
+  "pyperclip"
 ]
 keywords = ["chatbot", "cli", "llm"]
 classifiers = [

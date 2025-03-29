@@ -49,3 +49,22 @@ def print_streaming_markdown(provider, model_name, messages) -> str:
             live.update(Markdown(display_text))
     return full_response
 
+# This is a test function for a potential new feature using Textual UI.
+def textual_streaming_markdown(provider, model_name, messages) -> str:
+    """
+    Streams markdown content using Textual UI's better rendering.
+    Returns the full response when complete.
+    """
+    def stream_provider():
+        for token in provider.stream_completion(model_name, messages):
+            chunk = "".join(token)
+            yield chunk
+    
+    import os
+    import sys
+    # Add the project root directory to the Python path
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    sys.path.append(project_root)
+    
+    from demos.textual_ui import display_streaming_markdown
+    return display_streaming_markdown(stream_provider)
