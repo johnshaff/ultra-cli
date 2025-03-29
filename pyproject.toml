@@ -13,7 +13,8 @@ license = "MIT"
 dependencies = [
   "rich",
   "requests",
-  "openai"
+  "openai",
+  "textual"
 ]
 keywords = ["chatbot", "cli", "llm"]
 classifiers = [

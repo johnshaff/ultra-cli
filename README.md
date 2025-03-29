@@ -12,7 +12,8 @@ Ultra works with any terminal, but this screenshot is from [iTerm2](https://gith
 - Session-based context storage, with options to export the history.
 - Lightweight terminal UI with color-coded prompts.
 - Configurable ASCII art welcome screen.
-- Basic streaming support for partial response updates.
+- Advanced streaming with Textual-based scrollable markdown display.
+- Interactive terminal interface with keyboard navigation.
 
 ## Installation
 

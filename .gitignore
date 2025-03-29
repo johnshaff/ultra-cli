@@ -39,3 +39,6 @@ Thumbs.db
 
 # Development tools
 dev-tools/
+
+# Demo files
+demos/
