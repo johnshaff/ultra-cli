@@ -10,9 +10,9 @@ def print_ascii_art():
 ██╗   ██╗██╗  ████████╗██████╗  █████╗ 
 ██║   ██║██║  ╚══██╔══╝██╔══██╗██╔══██╗
 ██║   ██║██║     ██║   ██████╔╝███████║
-╚██╗ ██╔╝██║     ██║   ██╔══██╗██╔══██║
- ╚████╔╝ ███████╗██║   ██║  ██║██║  ██║
-  ╚═══╝  ╚══════╝╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
+██║   ██║██║     ██║   ██╔══██╗██╔══██║
+╚██████╔╝███████╗██║   ██║  ██║██║  ██║
+ ╚═════╝ ╚══════╝╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
     """
     console.print(art, style="bold magenta", end="")
 
@@ -40,12 +40,13 @@ def print_streaming_markdown(provider, model_name, messages) -> str:
     """
     full_response = ""
     # Live display will continuously update the rendered markdown.
-    with Live(Markdown(""), refresh_per_second=10) as live:
+    with Live(Markdown(""), refresh_per_second=20) as live:
         for token in provider.stream_completion(model_name, messages):
             chunk = "".join(token)
             full_response += chunk
-            # Update the live markdown every iteration.
-            live.update(Markdown(full_response))
+            # Restrict how much text you feed to live.update
+            display_text = "\n".join(full_response.splitlines()[-100:])
+            live.update(Markdown(display_text))
     return full_response
 
 def print_markdown(md_text: str):

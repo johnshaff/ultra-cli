@@ -124,7 +124,7 @@ class UltraApp:
             
             # Prepare context for model
             messages = self.context_manager.context
-            console.print(color_text("Ultra >>>", "red"), end=" ")
+            #console.print(color_text("Ultra >>>", "red"), end=" ")
             # Stream the model's response
             full_response = print_streaming_markdown(self.current_provider, self.current_model, messages)
             console.print()  # Add a newline after the streamed response
