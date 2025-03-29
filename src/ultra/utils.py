@@ -49,9 +49,3 @@ def print_streaming_markdown(provider, model_name, messages) -> str:
             live.update(Markdown(display_text))
     return full_response
 
-def print_markdown(md_text: str):
-    """
-    Print multi-line text as markdown (code highlighting, etc.) using Rich.
-    """
-    markdown_obj = Markdown(md_text)
-    console.print(markdown_obj)
