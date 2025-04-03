@@ -4,7 +4,7 @@ import os
 import json
 
 
-def write_styled_docx(json_file="json/custom-eXnBXw2vx8o.json"):
+def write_styled_docx(json_file: str):
     # Load metadata from the JSON file
     with open(json_file, "r") as jf:
         data = json.load(jf)

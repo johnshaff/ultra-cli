@@ -13,6 +13,10 @@ from ultra.utils import (
     color_text
 )
 
+from ultra.transcribe import transcribe_video
+from ultra.meta import download_video_info
+from ultra.create_doc import write_styled_docx
+
 
 class UltraApp:
     def __init__(self):
@@ -66,6 +70,19 @@ class UltraApp:
         if user_input.startswith("/new"):
             self.new_session()
             console.print("[bold green]New session started![/bold green]")
+            return True
+
+        if user_input.startswith("/transcribe"):
+            console.print("[bold green]Starting transcription process...[/bold green]")
+            # Ask the user for a video URL
+            url = Prompt.ask("Please enter the video URL")
+            # Transcribe the video. This function returns the URL back (for now)
+            transcribe_video(url)
+            # Download video metadata and process JSON
+            json_file = download_video_info(url)
+            # Create and open the styled DOCX document using the JSON file
+            write_styled_docx(json_file)
+            console.print("[bold green]Transcription and document creation complete![/bold green]")
             return True
 
         if user_input.startswith("/clear"):

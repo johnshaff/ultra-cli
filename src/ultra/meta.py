@@ -6,7 +6,7 @@ import shlex
 
 
 
-def download_video_info(url):
+def download_video_info(url: str) -> str:
     # Build the command using the user-agent (no cookies used)
     command = [
         "yt-dlp",
@@ -88,6 +88,7 @@ def download_video_info(url):
     # download_thumbnail(video_thumbnail, video_id)
     
     process_custom_json(custom_json_filename)
+    return custom_json_filename
     
     
 def numbers_to_strings(data):

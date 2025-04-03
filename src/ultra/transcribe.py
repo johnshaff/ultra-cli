@@ -10,7 +10,7 @@ from ultra.providers import OpenAIProvider
 from ultra.pdf import text_to_pdf
 
 
-def transcribe_video(url: str):
+def transcribe_video(url: str) -> str:
     # ----------------------
     # Download Audio
     # ----------------------
@@ -75,6 +75,9 @@ def transcribe_video(url: str):
     
     print(f"Transcription complete! Saved to transcript/{title}-final.txt")
     
+    return url
+    
+    '''
     if platform.system() == "Darwin":
         os.system(f"open transcript/{title}-final.txt")
     elif platform.system() == "Windows":
@@ -82,7 +85,8 @@ def transcribe_video(url: str):
     else:
     # Assume Linux
         os.system(f"xdg-open transcript/{title}-final.txt")
-
+    '''
+    
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python transcribe.py <youtube_url>")
