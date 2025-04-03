@@ -17,8 +17,6 @@ def main():
         print("\033]0;⚡ Ultra Chat\007", end="")
         # Create app without initial message (will show in chat_loop with model)
         app = UltraApp()
-        # We'll skip the selection and pick a default
-        # e.g. "openai" with "gpt-3.5-turbo"
         provider = app.initialize_provider("openai")
         app.current_provider = provider
         app.current_model = provider.get_cheapest_model()
@@ -36,8 +34,6 @@ def main():
         print("\033]0;⚡ Ultra Chat\007", end="")
         # Create app without initial message (will show in chat_loop with model)
         app = UltraApp()
-        # We'll skip the selection and pick a default
-        # e.g. "openai" with "gpt-3.5-turbo"
         provider = app.initialize_provider("openai")
         app.current_provider = provider
         app.current_model = provider.get_cheapest_model()

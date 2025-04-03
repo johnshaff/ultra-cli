@@ -1,5 +1,6 @@
 # Python
 __pycache__/
+/src/ultra/__pycache__
 *.py[cod]
 *$py.class
 *.so
@@ -39,3 +40,7 @@ Thumbs.db
 
 # Development tools
 dev-tools/
+
+# Development directories
+/demos
+/docs 
