@@ -82,7 +82,7 @@ class OpenAIProvider(BaseProvider):
 
     def format_transcription(self, file_path: str) -> str:
         with open(file_path, "rb") as f:
-            file_upload = openai.File.create(file=f, purpose="user_data")
+            file_upload = openai.files.create(file=f, purpose="user_data")
         messages = [
             {
                 "role": "user",
