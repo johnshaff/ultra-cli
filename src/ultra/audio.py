@@ -40,6 +40,7 @@ def download_youtube_audio(url, output_path="audio") -> str:
             "--extract-audio",  # Extract audio only
             "--audio-format", "mp3",  # Convert to MP3
             "--user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0",
+            "--verbose",  # Verbose output
             url
         ]
         
