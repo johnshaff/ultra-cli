@@ -4,8 +4,6 @@ import json
 import shlex
 #from thumbnail import download_thumbnail  # Import the thumbnail downloader
 
-
-
 def download_video_info(url: str) -> str:
     # Build the command using the user-agent (no cookies used)
     command = [
@@ -68,6 +66,9 @@ def download_video_info(url: str) -> str:
         "categories": video_categories,
         "tags": video_tags,
     }
+
+    # Ensure the 'json' directory exists or create it
+    os.makedirs("json", exist_ok=True)
     
     # Save the full JSON data
     '''
@@ -78,10 +79,10 @@ def download_video_info(url: str) -> str:
     
     # Save the custom JSON data
     custom_json_filename = f"json/custom-{video_id}.json"
+    
     with open(custom_json_filename, "w") as custom_file:
         json.dump(custom_dict, custom_file, indent=4)
     
-   
     print(f"Custom JSON data saved to: {custom_json_filename}")
     
     # Download the thumbnail using the imported download_thumbnail function
@@ -89,8 +90,7 @@ def download_video_info(url: str) -> str:
     
     process_custom_json(custom_json_filename)
     return custom_json_filename
-    
-    
+
 def numbers_to_strings(data):
     """
     Converts numerical view_count, like_count, and comment_count fields into formatted strings with commas.
@@ -100,7 +100,6 @@ def numbers_to_strings(data):
         if isinstance(value, (int, float)):
             data[key] = "{:,}".format(value)
     return data
-
 
 def dates_to_strings(data):
     """
@@ -118,7 +117,6 @@ def dates_to_strings(data):
         # in case the date is not in expected format, leave it unchanged
         pass
     return data
-
 
 def numbers_to_time(data):
     """
@@ -138,7 +136,6 @@ def numbers_to_time(data):
             secs = seconds % 60
             data["duration"] = f"{minutes:02d}:{secs:02d}"
     return data
-
 
 def process_custom_json(filename):
     """

@@ -8,6 +8,7 @@ from nltk.tokenize.punkt import PunktSentenceTokenizer
 from ultra.audio import download_youtube_audio
 from ultra.providers import OpenAIProvider
 from ultra.pdf import text_to_pdf
+from ultra.config import get_api_key
 
 
 def transcribe_video(url: str) -> str:
@@ -63,7 +64,7 @@ def transcribe_video(url: str) -> str:
         
     text_to_pdf(title)
     
-    chatgpt = OpenAIProvider()
+    chatgpt = OpenAIProvider(get_api_key("openai"))
     formatted_text = chatgpt.format_transcription(f"transcript/{title}-final.pdf")
     
     with open(f"transcript/{title}-final.txt", "w") as output_file:
