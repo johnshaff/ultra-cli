@@ -1,4 +1,5 @@
 import sys
+import time
 from rich.prompt import Prompt
 from typing import Optional
 
@@ -76,11 +77,8 @@ class UltraApp:
             console.print("[bold green]Starting transcription process...[/bold green]")
             # Ask the user for a video URL
             url = Prompt.ask("Please enter the video URL")
-            # Transcribe the video. This function returns the URL back (for now)
             transcribe_video(url)
-            # Download video metadata and process JSON
             json_file = download_video_info(url)
-            # Create and open the styled DOCX document using the JSON file
             write_styled_docx(json_file)
             console.print("[bold green]Transcription and document creation complete![/bold green]")
             return True
@@ -109,6 +107,13 @@ class UltraApp:
         if user_input.startswith("/model"):
             console.print("[bold magenta]Switching model...[/bold magenta]")
             self.select_provider_and_model()
+            return True
+
+        # New command: /progress - show a spinner for progress simulation.
+        if user_input.startswith("/progress"):
+            with console.status("I'm working on your video now", spinner="aesthetic"):
+                time.sleep(15)  # Simulate some work
+            console.print("\n ✅ Done!\n")
             return True
 
         if user_input in ("/quit", "/exit"):
