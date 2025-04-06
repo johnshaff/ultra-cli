@@ -9,6 +9,12 @@ from ultra.audio import download_youtube_audio
 from ultra.providers import OpenAIProvider
 from ultra.pdf import text_to_pdf
 from ultra.config import get_api_key
+import io
+import logging
+from ultra.logging_config import redirect_nested_logs
+
+logger = logging.getLogger(__name__)
+
 
 
 def transcribe_video(url: str) -> str:
@@ -22,33 +28,32 @@ def transcribe_video(url: str) -> str:
     # ----------------------
     nltk_data_dir = os.getcwd()
     nltk.data.path = [nltk_data_dir] + nltk.data.path
-    nltk.download('punkt', download_dir=nltk_data_dir)
+    redirect_nested_logs(nltk.download, 'punkt', download_dir=nltk_data_dir, quiet=True)
     tokenizer = PunktSentenceTokenizer()
-    print("Tokenizer loaded successfully!")
+    logger.info("Tokenizer loaded successfully!")
     
     # ----------------------
     # Load Whisper Model
     # ----------------------
-    model = whisper.load_model("base", "cpu", download_root="./models")
+    
+    model = redirect_nested_logs(whisper.load_model, "base", "cpu", download_root="./models")
+
     
     # ----------------------
     # Transcribe Audio
     # ----------------------
     audio_file = f"audio/{title}.mp3"
     
-    def transcribe(audio_file: str) -> str:
-        result = model.transcribe(audio_file, fp16=False, verbose=False)
-        return result
+    transcription = redirect_nested_logs(model.transcribe, audio_file, fp16=False, verbose=False)
     
-    print(f"Transcribing audio file: {audio_file}...")
-    transcription = transcribe(audio_file)
-    
+    logger.info(f"Transcribing audio file: {audio_file}...")
+   
     
     # ----------------------
     # Process Transcription
     # ----------------------
     
-    print("Formatting transcription...")
+    logger.info("Formatting transcription...")
     
     with open(f"transcript/{title}-raw.txt", "w") as file:
         file.write(transcription["text"].strip())
@@ -74,7 +79,7 @@ def transcribe_video(url: str) -> str:
     os.remove(f"transcript/{title}-sentences.txt")
     os.remove(f"transcript/{title}-final.pdf")
     
-    print(f"Transcription complete! Saved to transcript/{title}-final.txt")
+    logger.info(f"Transcription complete! Saved to transcript/{title}-final.txt")
     
     return url
     

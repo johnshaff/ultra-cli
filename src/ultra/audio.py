@@ -3,6 +3,11 @@ import sys
 import subprocess
 import re
 import shlex  # Added to handle special characters in URLs
+import logging
+from ultra.logging_config import redirect_nested_logs
+
+logger = logging.getLogger(__name__)
+
 
 def download_youtube_audio(url, output_path="audio") -> str:
     """
@@ -16,7 +21,7 @@ def download_youtube_audio(url, output_path="audio") -> str:
         # Create output directory if it doesn't exist
         if not os.path.exists(output_path):
             os.makedirs(output_path)
-            print(f"Created directory: {output_path}")
+            logger.info(f"Created directory: {output_path}")
       
         # Extract video ID from URL to use in filename
         video_id = None
@@ -44,11 +49,13 @@ def download_youtube_audio(url, output_path="audio") -> str:
             url
         ]
         
-        print(f"Downloading audio: {url}")
-        subprocess.run(cmd, check=True)
+        logger.info(f"Downloading audio: {url}")
+        
+        # Added capture_output and text parameters to capture output
+        redirect_nested_logs(subprocess.run, cmd, capture_output=True, text=True, check=True)
         
         output_file = f"{output_path}/{video_id}.mp3"
-        print(f"Download complete! Saved to: {output_file}")
+        logger.info(f"Download complete! Saved to: {output_file}")
         
         return video_id
         

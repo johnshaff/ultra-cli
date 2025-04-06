@@ -2,6 +2,11 @@ from docx import Document
 from docx.shared import Pt, RGBColor
 import os
 import json
+import logging
+from ultra.logging_config import redirect_nested_logs
+from ultra.opener import open_video
+
+logger = logging.getLogger(__name__)
 
 
 def write_styled_docx(json_file: str):
@@ -83,8 +88,9 @@ def write_styled_docx(json_file: str):
 
     # Save and open the document
     doc.save(output_path)
-    print(f"Document has been created: {output_path}")
+    logger.info(f"Document has been created: {output_path}")
     os.system(f"open {output_path}")
+    open_video(data["id"])
 
 
 if __name__ == "__main__":

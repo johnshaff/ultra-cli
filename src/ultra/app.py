@@ -33,7 +33,7 @@ class UltraApp:
         Creates or returns a provider object from an internal registry.
         """
         if provider_key == "openai":
-            if provider_key not in self.providers:
+            if (provider_key not in self.providers):
                 api_key = get_api_key(provider_key)
                 self.providers[provider_key] = OpenAIProvider(api_key)
             return self.providers[provider_key]
@@ -74,12 +74,11 @@ class UltraApp:
             return True
 
         if user_input.startswith("/transcribe"):
-            console.print("[bold green]Starting transcription process...[/bold green]")
-            # Ask the user for a video URL
             url = Prompt.ask("Please enter the video URL")
-            transcribe_video(url)
-            json_file = download_video_info(url)
-            write_styled_docx(json_file)
+            with console.status("I'm working on your video now", spinner="aesthetic"):
+                transcribe_video(url)
+                json_file = download_video_info(url)
+                write_styled_docx(json_file)
             console.print("[bold green]Transcription and document creation complete![/bold green]")
             return True
 

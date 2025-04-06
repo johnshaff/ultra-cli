@@ -3,22 +3,35 @@ import subprocess
 import json
 import shlex
 #from thumbnail import download_thumbnail  # Import the thumbnail downloader
+import logging
+from ultra.logging_config import redirect_nested_logs
+from datetime import datetime
+
+
+logger = logging.getLogger(__name__)
+
 
 def download_video_info(url: str) -> str:
+    
+    # Ensure the 'video' directory exists or create it
+    os.makedirs("video", exist_ok=True)
+    
     # Build the command using the user-agent (no cookies used)
     command = [
         "yt-dlp",
-        "--skip-download",
+        "--recode-video", "mp4",
+        #"--skip-download",
         "--print-json",
         "--user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0",
+        "--output", "video/%(id)s.%(ext)s",
         url,
     ]
     
-    print("Running command:")
-    print(" ".join(shlex.quote(arg) for arg in command))
+    logger.info("Running command:")
+    logger.info(" ".join(shlex.quote(arg) for arg in command))
     
     try:
-        result = subprocess.run(command, capture_output=True, text=True, check=True)
+        result = redirect_nested_logs(subprocess.run, command, capture_output=True, text=True, check=True)
     except subprocess.CalledProcessError as e:
         print("yt-dlp failed:")
         print("STDOUT:", e.stdout)
@@ -30,7 +43,7 @@ def download_video_info(url: str) -> str:
     try:
         info_dict = json.loads(info_str)
     except json.JSONDecodeError:
-        print("Failed to parse JSON output.")
+        logger.info("Failed to parse JSON output.")
         return
 
     # Use video id for naming
@@ -83,7 +96,7 @@ def download_video_info(url: str) -> str:
     with open(custom_json_filename, "w") as custom_file:
         json.dump(custom_dict, custom_file, indent=4)
     
-    print(f"Custom JSON data saved to: {custom_json_filename}")
+    logger.info(f"Custom JSON data saved to: {custom_json_filename}")
     
     # Download the thumbnail using the imported download_thumbnail function
     # download_thumbnail(video_thumbnail, video_id)
@@ -105,7 +118,7 @@ def dates_to_strings(data):
     """
     Converts the upload_date (YYYYMMDD) string into a formatted date string like 'April 2, 2025'.
     """
-    from datetime import datetime
+    
 
     date_str = data.get("upload_date")
     try:
@@ -146,7 +159,7 @@ def process_custom_json(filename):
         with open(filename, "r") as file:
             data = json.load(file)
     except Exception as e:
-        print(f"Failed to load JSON file: {e}")
+        logger.error(f"Failed to load JSON file: {e}")
         return
 
     # Apply the transformations
@@ -157,9 +170,9 @@ def process_custom_json(filename):
     try:
         with open(filename, "w") as file:
             json.dump(data, file, indent=4)
-        print(f"Processed JSON data saved to: {filename}")
+        logger.info(f"Processed JSON data saved to: {filename}")
     except Exception as e:
-        print(f"Failed to write JSON file: {e}")
+        logger.error(f"Failed to write JSON file: {e}")
 
 
 

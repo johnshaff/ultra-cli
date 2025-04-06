@@ -4,6 +4,7 @@ from rich.console import Console
 
 from ultra.app import UltraApp
 from ultra.utils import print_ascii_art, console
+from ultra.logging_config import configure_logging
 
 def main():
     """
@@ -16,6 +17,7 @@ def main():
         # Set terminal title (no newline)
         print("\033]0;⚡ Ultra Chat\007", end="")
         # Create app without initial message (will show in chat_loop with model)
+        configure_logging()
         app = UltraApp()
         provider = app.initialize_provider("openai")
         app.current_provider = provider
@@ -31,15 +33,6 @@ def main():
         run_interactive_welcome()
     elif subcommand == "chat":
         # Set terminal title (no newline)
-        print("\033]0;⚡ Ultra Chat\007", end="")
-        # Create app without initial message (will show in chat_loop with model)
-        app = UltraApp()
-        provider = app.initialize_provider("openai")
-        app.current_provider = provider
-        app.current_model = provider.get_cheapest_model()
-        app.new_session()
-        app.chat_loop()
-    elif subcommand == "transcribe":
         print("\033]0;⚡ Ultra Chat\007", end="")
         # Create app without initial message (will show in chat_loop with model)
         app = UltraApp()
