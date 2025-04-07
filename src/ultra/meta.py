@@ -118,8 +118,6 @@ def dates_to_strings(data):
     """
     Converts the upload_date (YYYYMMDD) string into a formatted date string like 'April 2, 2025'.
     """
-    
-
     date_str = data.get("upload_date")
     try:
         # Assume the raw format is YYYYMMDD

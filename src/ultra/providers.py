@@ -7,11 +7,11 @@ they are applicable and it is possible to decipher. This is from audio transcrip
 may be misspelled words or other oddities which I'd like you to decipher and correct without 
 major revisions. The output should be in plain text, no markdown etc. Be clear where you are
 interjecting and where the speaker is speaking using quotation marks such as 
-'Steven then said "there are a lot of problems with the economy"' etc. Your purpose is truly
+'Steven then said "there are a lot of problems with the economy"' etc. Your purpose is to truly
 represent the transcription in a more readable format, it is NOT to summarize.
 
 Do not include include an introduction or summary of the text, just the text itself. Also do not
-any any spacing lines or other formatting, just the text itself.
+use any spacing lines or other formatting, just the text itself.
 """
 
 class BaseProvider:

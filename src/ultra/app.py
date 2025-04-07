@@ -1,6 +1,9 @@
 import sys
 import time
 from rich.prompt import Prompt
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.live import Live
 from typing import Optional
 
 from ultra.config import get_api_key
@@ -8,8 +11,7 @@ from ultra.context_manager import ContextManager
 from ultra.providers import OpenAIProvider  # add more providers here
 from ultra.utils import (
     print_ascii_art,
-    print_streaming_response,
-    print_streaming_markdown,
+    rich_streaming_markdown,
     console,
     color_text
 )
@@ -125,10 +127,9 @@ class UltraApp:
         """
         Primary chat loop after a model is selected.
         """
-        # Use #000000 for true black instead of default bold black which might appear as gray
+
         console.print(f"[bold #000000]Ultra CLI - Quick Chat with {self.current_model}[/bold #000000]\n")
         while True:
-            # Prompt for user input (without extra line space)
             user_prompt = console.input(color_text("John >>> ", "blue"))
 
             # Check if input is a command
@@ -139,16 +140,21 @@ class UltraApp:
 
             # Add user message to context
             self.context_manager.add_message("user", user_prompt)
-
-            # Add an empty line between messages
             print()
-            
-            # Prepare context for model
+        
             messages = self.context_manager.context
-            #console.print(color_text("Ultra >>>", "red"), end=" ")
-            # Stream the model's response
-            full_response = print_streaming_markdown(self.current_provider, self.current_model, messages)
-            console.print()  # Add a newline after the streamed response
+            #full_response = rich_streaming_markdown(self.current_provider, self.current_model, messages)
+            
+            full_response = ""
+            # Live display will continuously update the rendered markdown.
+            with Live(Markdown(""), refresh_per_second=20) as live:
+                for token in self.current_provider.stream_completion(self.current_model, messages):
+                    chunk = "".join(token)
+                    full_response += chunk
+                    # Restrict how much text you feed to live.update
+                    display_text = "\n".join(full_response.splitlines()[-100:])
+                    live.update(Markdown(display_text))
+                    console.print()  # Add a newline after the streamed response
 
             self.context_manager.add_message("assistant", full_response)
 
