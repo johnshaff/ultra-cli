@@ -154,8 +154,8 @@ class UltraApp:
                     # Restrict how much text you feed to live.update
                     display_text = "\n".join(full_response.splitlines()[-100:])
                     live.update(Markdown(display_text))
-                    console.print()  # Add a newline after the streamed response
-
+               
+            console.print() # Add a newline after the streamed response
             self.context_manager.add_message("assistant", full_response)
 
 def run_interactive_welcome():

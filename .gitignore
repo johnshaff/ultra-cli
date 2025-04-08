@@ -38,9 +38,15 @@ env/
 .DS_Store
 Thumbs.db
 
-# Development tools
-dev-tools/
-
 # Development directories
+/dev-tools
 /demos
-/docs 
+/docs
+/src/ultra/transcribe
+/src/ultra/models
+/src/ultra/audio
+/src/ultra/video
+/src/ultra/image
+/src/ultra/document
+/src/ultra/json
+
