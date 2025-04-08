@@ -80,7 +80,7 @@ def write_styled_docx(json_file: str):
 
     # 10) Transcript content from file using the id from JSON
     os.makedirs("transcript", exist_ok=True)
-    transcript_file_path = f"transcript/{data['id']}-final.txt"
+    transcript_file_path = f"/Users/johnshaff/Documents/dev/transcript/{data['id']}-final.txt"
     #transcript_file_path = f"transcript/KZcXSG5r5q4-final.txt"
     with open(transcript_file_path, "r") as file:
         transcript_content = file.read()
@@ -94,4 +94,4 @@ def write_styled_docx(json_file: str):
 
 
 if __name__ == "__main__":
-    write_styled_docx()
+    write_styled_docx(json_file="/Users/johnshaff/Documents/dev/json/custom-_7yuo6JRexY.json")

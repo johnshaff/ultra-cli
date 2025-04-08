@@ -28,9 +28,15 @@ def download_youtube_audio(url, output_path="audio") -> str:
         if "youtu.be" in url:
             video_id = url.split("/")[-1].split("?")[0]
         elif "youtube.com" in url:
+            # Check for standard video format (v=VIDEO_ID)
             match = re.search(r"v=([a-zA-Z0-9_-]+)", url)
             if match:
                 video_id = match.group(1)
+            # Check for live video format (/live/VIDEO_ID)
+            else:
+                match = re.search(r"/live/([a-zA-Z0-9_-]+)", url)
+                if match:
+                    video_id = match.group(1)
         
         if not video_id:
             video_id = "video"
@@ -52,7 +58,7 @@ def download_youtube_audio(url, output_path="audio") -> str:
         logger.info(f"Downloading audio: {url}")
         
         # Added capture_output and text parameters to capture output
-        redirect_nested_logs(subprocess.run, cmd, capture_output=True, text=True, check=True)
+        redirect_nested_logs(subprocess.run, cmd, capture_output=True, text=True, check=True, logger=logger)
         
         output_file = f"{output_path}/{video_id}.mp3"
         logger.info(f"Download complete! Saved to: {output_file}")

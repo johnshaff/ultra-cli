@@ -1,18 +1,6 @@
 import openai
 from typing import List
-
-INSTRUCTION_TEXT = """\
-Give me back the text of this document formatted in paragraph form, with speaker titles if 
-they are applicable and it is possible to decipher. This is from audio transcription so there 
-may be misspelled words or other oddities which I'd like you to decipher and correct without 
-major revisions. The output should be in plain text, no markdown etc. Be clear where you are
-interjecting and where the speaker is speaking using quotation marks such as 
-'Steven then said "there are a lot of problems with the economy"' etc. Your purpose is to truly
-represent the transcription in a more readable format, it is NOT to summarize.
-
-Do not include include an introduction or summary of the text, just the text itself. Also do not
-use any spacing lines or other formatting, just the text itself.
-"""
+from ultra.text_templates import TRANSCRIBE_EXACT, TRANSCRIBE_SPEAKERS, TRANSCRIBE_SPEAKERS_V2
 
 class BaseProvider:
     def list_models(self) -> List[str]:
@@ -88,7 +76,7 @@ class OpenAIProvider(BaseProvider):
                 "role": "user",
                 "content": [
                     {"type": "file", "file": {"file_id": file_upload.id}},
-                    {"type": "text", "text": INSTRUCTION_TEXT}
+                    {"type": "text", "text": TRANSCRIBE_SPEAKERS_V2}
                 ]
             }
         ]
