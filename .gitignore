@@ -50,3 +50,6 @@ Thumbs.db
 /src/ultra/document
 /src/ultra/json
 
+# Claude.ai specific files
+CLAUDE.md
+

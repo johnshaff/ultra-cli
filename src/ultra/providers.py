@@ -1,6 +1,6 @@
 import openai
 from typing import List
-from ultra.text_templates import TRANSCRIBE_EXACT, TRANSCRIBE_SPEAKERS, TRANSCRIBE_SPEAKERS_V2
+from ultra.text_templates import TRANSCRIBE_SPEAKERS_V3
 
 class BaseProvider:
     def list_models(self) -> List[str]:
@@ -76,7 +76,7 @@ class OpenAIProvider(BaseProvider):
                 "role": "user",
                 "content": [
                     {"type": "file", "file": {"file_id": file_upload.id}},
-                    {"type": "text", "text": TRANSCRIBE_SPEAKERS_V2}
+                    {"type": "text", "text": TRANSCRIBE_SPEAKERS_V3}
                 ]
             }
         ]
