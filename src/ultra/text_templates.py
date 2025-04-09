@@ -55,3 +55,52 @@ Speaker 2: Yeah, I totally agree, I think once we get the demark count stacking 
 Do not include an introduction, summary, or any explanatory text. Do not add extra spacing 
 lines between speakers - just start each new speaker on a new line with their identifier.
 """
+
+# Template for transcription with enhanced speaker separation, specialized terminology correction, and continuous speaker handling
+TRANSCRIBE_SPEAKERS_V3 = """\
+Format this transcription with clear speaker separation and advanced error correction. For each different speaker, create a 
+new paragraph that begins with their name or identifier (e.g., "Speaker 1:", "John:", etc.) followed by their words. 
+If speaker identities are unclear, use consistent labels (Speaker 1, Speaker 2, etc.) throughout the document.
+
+This is from audio transcription, so special attention is needed for three types of corrections:
+
+1. SPECIALIZED TERMINOLOGY: Correct misspelled specialized terminology, especially proper nouns, brand names, 
+   technical terms, or names of people, places, or products. Use context to determine the correct spelling.
+   
+   Example:
+   Original: "As you guys can see, that is either the end of black and white or the start of the XY era. Goomey, Scralp, 
+   Natu, Weedle, Mankey, Talo. This one's backwards. What is this? Okay, we have Frogadir, an uncommon card, Cedra, 
+   Rihorn, Servine."
+   
+   Corrected: "As you guys can see, that is either the end of Black and White or the start of the XY era. Goomy, Skrelp, 
+   Natu, Weedle, Mankey, Taillow. This one's backwards. What is this? Okay, we have Frogadier, an uncommon card, Seadra, 
+   Rhyhorn, Servine."
+
+2. CONTINUOUS SPEAKER PARAGRAPHS: When the same speaker continues across multiple paragraphs, do NOT repeat the speaker 
+   label. Only identify the speaker again when a different person begins speaking.
+   
+   Instead of:
+   Speaker 1: Oh, cards are just falling out. Let's put those right down there. But yeah, Servine. Very nice Radiant 
+   Collection card. Put that right there. What is this? Golduck? Very cool. Another black and white Golduck card. 
+   Look at the artwork on that. That looks incredible.
+   
+   Speaker 1: Okay, here we go. Wismacot, another rare. And then we have a Luxio as well. Backwards card. Oh, I just 
+   revealed it to Farfetch.
+   
+   Use this format:
+   Speaker 1: Oh, cards are just falling out. Let's put those right down there. But yeah, Servine. Very nice Radiant 
+   Collection card. Put that right there. What is this? Golduck? Very cool. Another black and white Golduck card. 
+   Look at the artwork on that. That looks incredible.
+   
+   Okay, here we go. Wismacot, another rare. And then we have a Luxio as well. Backwards card. Oh, I just 
+   revealed it to Farfetch.
+
+3. NATURAL SPEECH CLEANUP: Smooth over natural language and transcription errors, including removing excessive 
+   filler words, false starts, and repetitions, while preserving the meaning and personality of the speaker.
+
+Present the content in plain text with no markdown formatting. Do not use quotation marks unless they were actually spoken. 
+Your goal is to make this transcription more readable while preserving the exact content and meaning of what was said.
+
+Do not include an introduction, summary, or any explanatory text. Do not add extra spacing lines between speakers - 
+just start each new speaker on a new line with their identifier.
+"""
