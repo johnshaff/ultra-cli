@@ -2,8 +2,10 @@ import os
 import json
 import time
 from typing import List, Dict
+from ultra.config import APP_WORKING_DIR
 
-SESSION_DIR = os.path.join(os.path.expanduser("~"), ".ultra", "sessions")
+# Define sessions directory in the working directory
+SESSION_DIR = os.path.join(APP_WORKING_DIR, "sessions")
 
 def ensure_session_dir():
     os.makedirs(SESSION_DIR, exist_ok=True)

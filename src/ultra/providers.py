@@ -80,9 +80,5 @@ class OpenAIProvider(BaseProvider):
                 ]
             }
         ]
-        response = openai.chat.completions.create(
-            model=self.get_cheapest_model(),
-            messages=messages,
-            temperature=0.0
-        )
-        return response.choices[0].message.content.strip()
+        return self.send_non_streaming_request(messages)
+        

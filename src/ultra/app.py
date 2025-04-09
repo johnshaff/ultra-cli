@@ -1,24 +1,11 @@
 import sys
 import time
-from rich.prompt import Prompt
-from rich.console import Console
-from rich.markdown import Markdown
-from rich.live import Live
+import os
 from typing import Optional
 
-from ultra.config import get_api_key
-from ultra.context_manager import ContextManager
-from ultra.providers import OpenAIProvider  # add more providers here
-from ultra.utils import (
-    print_ascii_art,
-    rich_streaming_markdown,
-    console,
-    color_text
-)
-
-from ultra.transcribe import transcribe_video
-from ultra.meta import download_video_info
-from ultra.create_doc import write_styled_docx
+# Only import essential modules at startup
+from ultra.config import get_api_key, APP_WORKING_DIR
+from ultra.utils import console, color_text
 
 
 class UltraApp:
@@ -34,6 +21,9 @@ class UltraApp:
         """
         Creates or returns a provider object from an internal registry.
         """
+        # Lazy import the provider only when needed
+        from ultra.providers import OpenAIProvider
+        
         if provider_key == "openai":
             if (provider_key not in self.providers):
                 api_key = get_api_key(provider_key)
@@ -48,6 +38,9 @@ class UltraApp:
         Asks user to pick a provider and model from a list of available providers.
         For now, we'll do OpenAI only. You can extend to multiple providers easily.
         """
+        # Lazy import only when needed
+        from rich.prompt import Prompt
+        
         provider_key = "openai"  # if you had multiple providers, prompt for them
         provider = self.initialize_provider(provider_key)
 
@@ -62,6 +55,8 @@ class UltraApp:
         self.current_model = models[model_idx]
 
     def new_session(self, session_name: Optional[str] = None):
+        # Lazy import only when needed
+        from ultra.context_manager import ContextManager
         self.context_manager = ContextManager(session_name)
 
     def handle_commands(self, user_input: str) -> bool:
@@ -76,11 +71,22 @@ class UltraApp:
             return True
 
         if user_input.startswith("/transcribe"):
+            # Only import Prompt for getting the URL
+            from rich.prompt import Prompt
+            
             url = Prompt.ask("Please enter the video URL")
+            
+            # Start the spinner immediately after getting the URL
             with console.status("I'm working on your video now", spinner="aesthetic"):
+                # Only import transcription modules after showing the spinner
+                from ultra.transcribe import transcribe_video
+                from ultra.meta import download_video_info
+                from ultra.create_doc import write_styled_docx
+                
                 transcribe_video(url)
                 json_file = download_video_info(url)
                 write_styled_docx(json_file)
+                
             console.print("[bold green]Transcription and document creation complete![/bold green]")
             return True
 
@@ -127,7 +133,10 @@ class UltraApp:
         """
         Primary chat loop after a model is selected.
         """
-
+        # Lazy import rich modules
+        from rich.markdown import Markdown
+        from rich.live import Live
+        
         console.print(f"[bold #000000]Ultra CLI - Quick Chat with {self.current_model}[/bold #000000]\n")
         while True:
             user_prompt = console.input(color_text("John >>> ", "blue"))
@@ -143,7 +152,6 @@ class UltraApp:
             print()
         
             messages = self.context_manager.context
-            #full_response = rich_streaming_markdown(self.current_provider, self.current_model, messages)
             
             full_response = ""
             # Live display will continuously update the rendered markdown.
@@ -164,6 +172,12 @@ def run_interactive_welcome():
     """
     # Set terminal title (no newline)
     print("\033]0;⚡ Ultra Chat\007", end="")
+    
+    # Switch to the configured working directory
+    os.chdir(APP_WORKING_DIR)
+    
+    # Lazy import only when needed
+    from ultra.utils import print_ascii_art
     
     # Show ASCII art for 'ultra models' command
     print_ascii_art()

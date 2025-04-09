@@ -3,6 +3,7 @@ import json
 
 CONFIG_DIR = os.path.join(os.path.expanduser("~"), ".ultra")
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
+APP_WORKING_DIR = '/Users/johnshaff/Documents/dev'
 
 def ensure_config_dir():
     os.makedirs(CONFIG_DIR, exist_ok=True)
