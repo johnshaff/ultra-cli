@@ -91,7 +91,9 @@ class UltraApp:
             return True
         
         if user_input.startswith("/context"):
-            self.context_manager.start_live_view()
+            # Lazy import only when needed
+            from ultra.context_editor import ContextEditor
+            ContextEditor.start_gui_view(self.context_manager)
             console.print("[bold green]Live context view started![/bold green]")
             return True
             
