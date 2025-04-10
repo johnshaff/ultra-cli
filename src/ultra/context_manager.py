@@ -68,3 +68,36 @@ class ContextManager:
             content = msg["content"]
             lines.append(f"{role}:\n{content}\n")
         return "\n".join(lines)
+    
+    
+    def start_live_view(self, refresh_interval=1000):
+        """
+        Opens a window that updates every refresh_interval (in ms) with the current context.
+        """
+        try:
+            import tkinter as tk
+        except ImportError:
+            raise ImportError(
+                "Tkinter is required for the live view feature. "
+                "Please ensure you are using a Python build that includes Tkinter. "
+                "On macOS, consider downloading Python from python.org or installing Tcl/Tk via Homebrew."
+            )
+        def update_text_widget():
+            text = ""
+            for msg in self.context:
+                text += f"{msg['role'].upper()}: {msg['content']}\n"
+            text_widget.config(state="normal")
+            text_widget.delete("1.0", tk.END)
+            text_widget.insert(tk.END, text)
+            text_widget.config(state="disabled")
+            root.after(refresh_interval, update_text_widget)
+    
+        root = tk.Tk()
+        root.title("Live Context View")
+        text_widget = tk.Text(root, state="disabled", width=80, height=20)
+        text_widget.pack(padx=10, pady=10)
+        
+        update_text_widget()
+        # Run the Tkinter mainloop in a separate thread to avoid blocking
+        import threading
+        threading.Thread(target=root.mainloop, daemon=True).start()

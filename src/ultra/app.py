@@ -89,7 +89,12 @@ class UltraApp:
                 
             console.print("[bold green]Transcription and document creation complete![/bold green]")
             return True
-
+        
+        if user_input.startswith("/context"):
+            self.context_manager.start_live_view()
+            console.print("[bold green]Live context view started![/bold green]")
+            return True
+            
         if user_input.startswith("/clear"):
             self.context_manager.clear_context()
             console.print("[bold green]Context cleared![/bold green]")
