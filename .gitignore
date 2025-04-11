@@ -41,7 +41,6 @@ Thumbs.db
 # Development directories
 /dev-tools
 /demos
-/docs
 /src/ultra/transcribe
 /src/ultra/models
 /src/ultra/audio
