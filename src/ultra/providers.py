@@ -1,5 +1,6 @@
 import openai
 from typing import List
+from ultra.text_templates import TRANSCRIBE_SPEAKERS_V3
 
 class BaseProvider:
     def list_models(self) -> List[str]:
@@ -32,22 +33,15 @@ class OpenAIProvider(BaseProvider):
 
     def list_models(self) -> List[str]:
         # For large org accounts, listing all can be lengthy.
-        # As an example, we fetch them and filter by ones we want to show:
         result = openai.models.list()
         models = [m.id for m in result.data if "gpt" in m.id]
         return sorted(models)
 
     def get_cheapest_model(self) -> str:
-        """
-        Hardcode or implement logic to pick a cheap model like "gpt-3.5-turbo".
-        """
+        # Hardcode the model for now.
         return "gpt-4o-mini"
 
     def stream_completion(self, model_name: str, messages: list):
-        """
-        messages: A list of dicts: [{"role": "user"/"assistant"/"system", "content": "text"}]
-        Yields tokens as they come in.
-        """
         response = openai.chat.completions.create(
             model=model_name,
             messages=messages,
@@ -59,10 +53,32 @@ class OpenAIProvider(BaseProvider):
                 yield content
 
     def get_completion(self, model_name: str, prompt: str) -> str:
-        """Non-streaming single response (helpful for summary, system tasks, etc.)."""
         response = openai.chat.completions.create(
             model=model_name,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.0
         )
         return response.choices[0].message.content.strip()
+
+    def send_non_streaming_request(self, messages: list) -> str:
+        response = openai.chat.completions.create(
+            model=self.get_cheapest_model(),
+            messages=messages,
+            temperature=0.0
+        )
+        return response.choices[0].message.content.strip()
+
+    def format_transcription(self, file_path: str) -> str:
+        with open(file_path, "rb") as f:
+            file_upload = openai.files.create(file=f, purpose="user_data")
+        messages = [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "file", "file": {"file_id": file_upload.id}},
+                    {"type": "text", "text": TRANSCRIBE_SPEAKERS_V3}
+                ]
+            }
+        ]
+        return self.send_non_streaming_request(messages)
+        

@@ -1,7 +1,9 @@
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.live import Live
-
+import os
+import glob
+import logging
 
 console = Console()
 
@@ -34,7 +36,7 @@ def print_streaming_response(provider, model_name, messages) -> str:
     print()  # move to next line
     return full_response
 
-def print_streaming_markdown(provider, model_name, messages) -> str:
+def rich_streaming_markdown(provider, model_name, messages) -> str:
     """
     Streams markdown content token by token and updates a live Markdown display.
     """

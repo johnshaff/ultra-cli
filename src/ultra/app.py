@@ -1,17 +1,11 @@
 import sys
-from rich.prompt import Prompt
+import time
+import os
 from typing import Optional
 
-from ultra.config import get_api_key
-from ultra.context_manager import ContextManager
-from ultra.providers import OpenAIProvider  # add more providers here
-from ultra.utils import (
-    print_ascii_art,
-    print_streaming_response,
-    print_streaming_markdown,
-    console,
-    color_text
-)
+# Only import essential modules at startup
+from ultra.config import get_api_key, APP_WORKING_DIR
+from ultra.utils import console, color_text
 
 
 class UltraApp:
@@ -27,8 +21,11 @@ class UltraApp:
         """
         Creates or returns a provider object from an internal registry.
         """
+        # Lazy import the provider only when needed
+        from ultra.providers import OpenAIProvider
+        
         if provider_key == "openai":
-            if provider_key not in self.providers:
+            if (provider_key not in self.providers):
                 api_key = get_api_key(provider_key)
                 self.providers[provider_key] = OpenAIProvider(api_key)
             return self.providers[provider_key]
@@ -41,6 +38,9 @@ class UltraApp:
         Asks user to pick a provider and model from a list of available providers.
         For now, we'll do OpenAI only. You can extend to multiple providers easily.
         """
+        # Lazy import only when needed
+        from rich.prompt import Prompt
+        
         provider_key = "openai"  # if you had multiple providers, prompt for them
         provider = self.initialize_provider(provider_key)
 
@@ -55,6 +55,8 @@ class UltraApp:
         self.current_model = models[model_idx]
 
     def new_session(self, session_name: Optional[str] = None):
+        # Lazy import only when needed
+        from ultra.context_manager import ContextManager
         self.context_manager = ContextManager(session_name)
 
     def handle_commands(self, user_input: str) -> bool:
@@ -68,6 +70,33 @@ class UltraApp:
             console.print("[bold green]New session started![/bold green]")
             return True
 
+        if user_input.startswith("/transcribe"):
+            # Only import Prompt for getting the URL
+            from rich.prompt import Prompt
+            
+            url = Prompt.ask("Please enter the video URL")
+            
+            # Start the spinner immediately after getting the URL
+            with console.status("I'm working on your video now", spinner="aesthetic"):
+                # Only import transcription modules after showing the spinner
+                from ultra.transcribe import transcribe_video
+                from ultra.meta import download_video_info
+                from ultra.create_doc import write_styled_docx
+                
+                transcribe_video(url)
+                json_file = download_video_info(url)
+                write_styled_docx(json_file)
+                
+            console.print("[bold green]Transcription and document creation complete![/bold green]")
+            return True
+        
+        if user_input.startswith("/context"):
+            # Lazy import only when needed
+            from ultra.context_editor import ContextEditor
+            ContextEditor.start_gui_view(self.context_manager)
+            console.print("[bold green]Live context view started![/bold green]")
+            return True
+            
         if user_input.startswith("/clear"):
             self.context_manager.clear_context()
             console.print("[bold green]Context cleared![/bold green]")
@@ -94,6 +123,13 @@ class UltraApp:
             self.select_provider_and_model()
             return True
 
+        # New command: /progress - show a spinner for progress simulation.
+        if user_input.startswith("/progress"):
+            with console.status("I'm working on your video now", spinner="aesthetic"):
+                time.sleep(15)  # Simulate some work
+            console.print("\n ✅ Done!\n")
+            return True
+
         if user_input in ("/quit", "/exit"):
             console.print("[bold red]Goodbye![/bold red]")
             sys.exit(0)
@@ -104,10 +140,12 @@ class UltraApp:
         """
         Primary chat loop after a model is selected.
         """
-        # Use #000000 for true black instead of default bold black which might appear as gray
+        # Lazy import rich modules
+        from rich.markdown import Markdown
+        from rich.live import Live
+        
         console.print(f"[bold #000000]Ultra CLI - Quick Chat with {self.current_model}[/bold #000000]\n")
         while True:
-            # Prompt for user input (without extra line space)
             user_prompt = console.input(color_text("John >>> ", "blue"))
 
             # Check if input is a command
@@ -118,17 +156,21 @@ class UltraApp:
 
             # Add user message to context
             self.context_manager.add_message("user", user_prompt)
-
-            # Add an empty line between messages
             print()
-            
-            # Prepare context for model
+        
             messages = self.context_manager.context
-            #console.print(color_text("Ultra >>>", "red"), end=" ")
-            # Stream the model's response
-            full_response = print_streaming_markdown(self.current_provider, self.current_model, messages)
-            console.print()  # Add a newline after the streamed response
-
+            
+            full_response = ""
+            # Live display will continuously update the rendered markdown.
+            with Live(Markdown(""), refresh_per_second=20) as live:
+                for token in self.current_provider.stream_completion(self.current_model, messages):
+                    chunk = "".join(token)
+                    full_response += chunk
+                    # Restrict how much text you feed to live.update
+                    display_text = "\n".join(full_response.splitlines()[-100:])
+                    live.update(Markdown(display_text))
+               
+            console.print() # Add a newline after the streamed response
             self.context_manager.add_message("assistant", full_response)
 
 def run_interactive_welcome():
@@ -137,6 +179,12 @@ def run_interactive_welcome():
     """
     # Set terminal title (no newline)
     print("\033]0;⚡ Ultra Chat\007", end="")
+    
+    # Switch to the configured working directory
+    os.chdir(APP_WORKING_DIR)
+    
+    # Lazy import only when needed
+    from ultra.utils import print_ascii_art
     
     # Show ASCII art for 'ultra models' command
     print_ascii_art()
