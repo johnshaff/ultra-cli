@@ -3,89 +3,12 @@ import sys
 import subprocess
 import pickle
 import tempfile
-import weakref
-
-def create_viewer_script(context_data, pickle_path, refresh_interval):
-    """Creates a temporary Python script that runs the PyQt viewer."""    
-    # Save initial context data
-    with open(pickle_path, "wb") as f:
-        pickle.dump(context_data, f)
-    
-    script = f'''
-import sys
-import os
-import pickle
-
-# Suppress all output
-os.environ['QT_LOGGING_RULES'] = '*.debug=false;*.warning=false'
-os.environ['QT_LOGGING_TO_CONSOLE'] = '0'
-
-from PyQt6 import QtWidgets, QtCore
-
-class ContextWindow(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Live Context View")
-        self.pickle_path = "{pickle_path}"
-        self.last_data_hash = None
-        
-        # Set up the text display
-        self.text_widget = QtWidgets.QTextEdit()
-        self.text_widget.setReadOnly(True)
-        self.setCentralWidget(self.text_widget)
-        self.resize(800, 600)
-        
-        # Set up the timer for updates
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.update_text)
-        self.timer.start({refresh_interval})
-        
-        self.update_text()
-        self.show()
-    
-    def update_text(self):
-        try:
-            # Reload context from pickle file each time
-            with open(self.pickle_path, "rb") as f:
-                context_data = pickle.load(f)
-            
-            # Check if data changed to avoid unnecessary updates
-            import hashlib
-            data_hash = hashlib.md5(str(context_data).encode()).hexdigest()
-            if self.last_data_hash == data_hash:
-                return  # No changes, don't update
-            self.last_data_hash = data_hash
-            
-            # Check if scrollbar is at the bottom before update
-            scrollbar = self.text_widget.verticalScrollBar()
-            was_at_bottom = scrollbar.value() >= scrollbar.maximum() - 20
-                
-            # Update the text content
-            text = ""
-            for msg in context_data:
-                text += f"{{msg['role'].upper()}}: {{msg['content']}}\\n\\n"
-            self.text_widget.setPlainText(text)
-            
-            # Only auto-scroll if we were already at the bottom
-            if was_at_bottom:
-                scrollbar.setValue(scrollbar.maximum())
-        except Exception as e:
-            print(f"Error updating text: {{e}}")
-
-app = QtWidgets.QApplication([])
-window = ContextWindow()
-app.exec()
-'''
-    
-    # Create a temporary file for the script
-    fd, path = tempfile.mkstemp(suffix='.py', prefix='context_viewer_')
-    with os.fdopen(fd, 'w') as f:
-        f.write(script)
-    return path
+import threading
+import time
 
 
 # Context manager wrapper that updates the pickle file on changes
-class ContextManagerObserver:
+class ContextObserver:
     def __init__(self, context_manager, pickle_path):
         self.context_manager = context_manager
         self.pickle_path = pickle_path
@@ -115,11 +38,26 @@ class ContextManagerObserver:
         except Exception:
             pass  # Silently ignore errors
 
+    def check_for_external_updates(self):
+        """Check if the editor has modified the pickle file and update if needed."""
+        try:
+            with open(self.pickle_path, "rb") as f:
+                new_context = pickle.load(f)
+                
+            # Check if the context has changed
+            if new_context != self.context_manager.context:
+                # Update the context_manager with the new data
+                self.context_manager.context = new_context
+                return True
+        except Exception:
+            pass
+        return False
+
 
 class ContextEditor:
     """Handles visualization for context display using PyQt."""
     
-    # Keep track of active observers to prevent garbage collection
+    # Keep track of active context observers to prevent garbage collection
     _active_observers = []
     
     @staticmethod
@@ -135,23 +73,37 @@ class ContextEditor:
             # Create a persistent pickle file path
             pickle_path = f"{tempfile.gettempdir()}/context_data_{id(context_provider)}.pickle"
             
-            # Create the viewer script
-            script_path = create_viewer_script(context_provider.context, pickle_path, refresh_interval)
+            # Save initial context data
+            with open(pickle_path, "wb") as f:
+                pickle.dump(context_provider.context, f)
             
             # Create an observer for this context manager
-            observer = ContextManagerObserver(context_provider, pickle_path)
+            observer = ContextObserver(context_provider, pickle_path)
             
             # Store reference to prevent garbage collection
             ContextEditor._active_observers.append(observer)
             
-            # Launch the script in a completely separate process
+            # Set up a timer to check for updates from the editor
+            def check_updates_periodically():
+                while True:
+                    time.sleep(refresh_interval / 1000 * 2)  # Check half as often as the refresh rate
+                    observer.check_for_external_updates()
+            
+            # Start the update checker in a background thread
+            update_thread = threading.Thread(target=check_updates_periodically, daemon=True)
+            update_thread.start()
+            
+            # Launch the context window script as a separate process
+            context_window_script = os.path.join(os.path.dirname(__file__), "context_window.py")
             with open(os.devnull, 'w') as devnull:
                 subprocess.Popen(
-                    [sys.executable, script_path],
+                    [sys.executable, context_window_script, 
+                     "--pickle-path", pickle_path, 
+                     "--refresh-interval", str(refresh_interval)],
                     stdout=devnull,
                     stderr=devnull,
                     start_new_session=True
                 )
                 
         except Exception as e:
-            raise ImportError(f"Could not start PyQt viewer: {str(e)}")
+            raise ImportError(f"Could not start PyQt Context Window Editor: {str(e)}")

@@ -31,7 +31,7 @@ class ContextWindow(QtWidgets.QMainWindow):
         self.text_widget.textChanged.connect(self.on_text_edited)
         
         # Set a nice monospaced font for better readability of code blocks
-        font = QtGui.QFont("Courier New", 10)
+        font = QtGui.QFont("Monaco", 12)
         self.text_widget.setFont(font)
         layout.addWidget(self.text_widget)
         
@@ -109,8 +109,12 @@ class ContextWindow(QtWidgets.QMainWindow):
                 # Insert the role in bold
                 cursor.insertText(msg["role"].upper() + ": ", bold_format)
                 
+                # Create normal format for content
+                normal_format = QtGui.QTextCharFormat()
+                normal_format.setFontWeight(QtGui.QFont.Weight.Normal)
+                
                 # Insert the content with normal formatting
-                cursor.insertText(msg["content"] + "\n\n")
+                cursor.insertText(msg["content"] + "\n\n", normal_format)
             
             # Ensure cursor is at the end
             cursor.movePosition(QtGui.QTextCursor.MoveOperation.End)
